@@ -1,0 +1,31 @@
+Metadata-Version: 2.1
+Name: mujoco_ar
+Version: 0.1.0
+Summary: A Python support package for an iOS app to receive position and rotation data using MuJoCo.
+Home-page: https://github.com/omarrayyann/mujocoar
+Author: Omar Rayyan
+Author-email: olr7742@nyu.edu
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: asyncio
+Requires-Dist: websockets
+Requires-Dist: numpy
+Requires-Dist: psutil
+Requires-Dist: opencv-python
+Requires-Dist: mujoco
+
+# MujocoARConnector
+
+MujocoARConnector is a Python support package that allows an iOS app to receive position and rotation data using MuJoCo.
+
+## Installation
+
+You can install the package using pip:
+
+```bash
+pip install mujoco_ar_connector
+```

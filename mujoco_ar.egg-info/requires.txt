@@ -1,0 +1,6 @@
+asyncio
+websockets
+numpy
+psutil
+opencv-python
+mujoco
