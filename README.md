@@ -26,7 +26,7 @@ connector = MujocoARConnector(ar_frequency=20)
 # Start the connector
 connector.start()
 
-# After connecting the iOS device (check guide below), get the latest AR data
+# Get latest AR data (after connecting the iOS device, check guide below)
 data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "grasp": bool}
 ```
 
@@ -46,7 +46,6 @@ connector = MujocoARConnector(
 # Start the connector
 connector.start()
 ```
-
 
 ## License
 
