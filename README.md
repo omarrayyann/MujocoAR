@@ -45,6 +45,9 @@ connector = MujocoARConnector(
 
 # Start the connector
 connector.start()
+
+# Get latest AR data (after connecting the iOS device, check guide below)
+data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "grasp": bool}
 ```
 
 ## License
