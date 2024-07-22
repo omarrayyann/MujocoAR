@@ -1,7 +1,7 @@
 
 # MujocoAR
 
-MujocoAR is a Python package that allows the retrieval of iOS ARKit data from a connected iOS device using MuJoCo.
+A Python package that allows the retrieval of iOS ARKit data from a connected iOS device using MuJoCo.
 
 ## Installation
 
