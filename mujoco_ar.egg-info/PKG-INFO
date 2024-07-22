@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: mujoco_ar
-Version: 0.1.0
-Summary: A Python support package for an iOS app to receive position and rotation data using MuJoCo.
-Home-page: https://github.com/omarrayyann/mujocoar
+Version: 0.2.0
+Summary: A connector to receive position and rotation data from a connected application.
+Home-page: https://github.com/yourusername/mujocoar
 Author: Omar Rayyan
 Author-email: olr7742@nyu.edu
 License: MIT
@@ -18,14 +18,62 @@ Requires-Dist: psutil
 Requires-Dist: opencv-python
 Requires-Dist: mujoco
 
-# MujocoARConnector
 
-MujocoARConnector is a Python support package that allows an iOS app to receive position and rotation data using MuJoCo.
+# MujocoAR
+
+A Python package that allows the retrieval of iOS ARKit data from a connected iOS device using MuJoCo.
 
 ## Installation
 
 You can install the package using pip:
 
 ```bash
-pip install mujoco_ar_connector
+pip install mujoco_ar
 ```
+
+## Usage
+
+Here's an example of how to use MujocoAR in your Python project:
+
+### Basic Setup (without MuJoCo cameras)
+
+```python
+from mujoco_ar import MujocoARConnector
+
+# Initialize the connector with your desired parameters
+connector = MujocoARConnector(ar_frequency=20)
+
+# Start the connector
+connector.start()
+
+# Get latest AR data (after connecting the iOS device, check guide below)
+data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "grasp": bool}
+```
+
+### Setup with a MuJoCo camera
+
+```python
+from mujoco_ar import MujocoARConnector
+
+# Initialize the connector with your desired parameters
+connector = MujocoARConnector(
+    mujoco_model=my_model, 
+    mujoco_data=my_data, 
+    camera_name='my_camera',
+    camera_frequency=10,
+)
+
+# Start the connector
+connector.start()
+
+# Get latest AR data (after connecting the iOS device, check guide below)
+data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "grasp": bool}
+```
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Author
+
+Omar Rayyan (olr7742@nyu.edu)
