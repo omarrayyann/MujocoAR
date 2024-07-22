@@ -12,6 +12,9 @@ import mujoco
 import warnings
 
 class MujocoARConnector:
+    """
+    A connector to receive position and rotation data from a connected application.
+    """
 
     def __init__(self, port=8888, mujoco_model=None, mujoco_data=None, camera_name=None, camera_resolution=(240, 320), controls_frequency=100, camera_frequency=1, debug=False):
         """
@@ -99,6 +102,7 @@ class MujocoARConnector:
         self.connected_clients.add(websocket)
         try:
             async for message in websocket:
+                print(self.get_updates)
                 if self.get_updates:
                     data = json.loads(message)
                     if 'rotation' in data and 'position' in data:
@@ -176,6 +180,7 @@ class MujocoARConnector:
         self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port)
         print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}")
 
+        # Start the camera and control loops
         await asyncio.gather(self._send_frame(), self._control_update(), self.server.wait_closed())
 
     def start(self):
