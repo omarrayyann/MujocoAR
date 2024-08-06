@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: mujoco_ar
-Version: 0.2.0
+Version: 0.7.0
 Summary: A connector to receive position and rotation data from a connected application.
-Home-page: https://github.com/yourusername/mujocoar
+Home-page: https://github.com/omarrayyann/mujocoar
 Author: Omar Rayyan
 Author-email: olr7742@nyu.edu
 License: MIT

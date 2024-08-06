@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='mujoco_ar',
-    version='0.2.0',
+    version='0.7.0',
     description='A connector to receive position and rotation data from a connected application.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author='Omar Rayyan',
     author_email='olr7742@nyu.edu',
-    url='https://github.com/yourusername/mujocoar',
+    url='https://github.com/omarrayyann/mujocoar',
     license='MIT',
     packages=find_packages(),
     install_requires=[
