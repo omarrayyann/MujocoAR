@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: mujoco_ar
-Version: 0.7.0
-Summary: A connector to receive position and rotation data from a connected application.
+Version: 0.9.0
+Summary: An AR controller designed to seamlessly control objects in MuJoCo and for other general uses by receiving position and rotation data from a connected iOS application.
 Home-page: https://github.com/omarrayyann/mujocoar
 Author: Omar Rayyan
 Author-email: olr7742@nyu.edu
@@ -21,7 +21,7 @@ Requires-Dist: mujoco
 
 # MujocoAR
 
-A Python package that allows the retrieval of iOS ARKit data from a connected iOS device using MuJoCo.
+A Python package that allows the retrieval of ARKit data from a connected iOS device for usage in MuJoCo.
 
 ## Installation
 

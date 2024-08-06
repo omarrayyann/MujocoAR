@@ -31,9 +31,11 @@ class MujocoARConnector:
             camera_frequency (int): The frequency of camera updates.
             debug (bool): Enable debug mode for verbose output.
         """
+        print("started")
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         self.ip_address = s.getsockname()[0]
+        print("finish")
         self.port = port
         self.latest_data = {
             "rotation": None,
@@ -51,7 +53,7 @@ class MujocoARConnector:
         self.camera_resolution = camera_resolution
         self.reset_position_values = np.array([0.0, 0.0, 0.0])
         self.get_updates = True
-        self.linked_tags = []
+        self.linked_frames = []
 
         if camera_name is not None and (mujoco_model is None or mujoco_data is None):
             warnings.warn("Must set the MuJoCo model and data to have the camera transmission work.")
@@ -117,13 +119,14 @@ class MujocoARConnector:
                         position = np.array(data['position'])
                         self.latest_data["rotation"] = rotation
                         self.latest_data["position"] = np.array([-position[2],-position[0],position[1]]).astype(float)
+                        # self.latest_data["position"] = np.array([position[0],position[1],position[2]]).astype(float)
                         if self.reset_position_values is not None and self.latest_data["position"].dtype == self.reset_position_values.dtype:
                             self.latest_data["position"] -= self.reset_position_values
                         self.latest_data["button"] = data.get('button', False)
                         self.latest_data["toggle"] = data.get('toggle', False)
 
-                        for linked_tags in self.linked_tags:
-                            linked_tags.update(self.mujoco_model, self.latest_data.copy())
+                        for linked_frames in self.linked_frames:
+                            linked_frames.update(self.mujoco_model, self.mujoco_data, self.latest_data.copy())
 
                         if self.debug:
                             print(f"[DATA] Rotation: {self.latest_data['rotation']}, Position: {self.latest_data['position']}, Button: {self.latest_data['button']}, Toggle: {self.latest_data['toggle']}")
@@ -235,7 +238,8 @@ class MujocoARConnector:
             raise ValueError("Must set the MuJoCo model and data to have a linked body.")
 
         body_id =  mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_BODY, name)
-        linked_body = LinkedTag(
+
+        linked_body = LinkedFrame(
             id=body_id,
             kind=0,
             scale=scale,
@@ -246,7 +250,7 @@ class MujocoARConnector:
             disable_rot = disable_rot,
         )
         
-        self.linked_tags.append(linked_body)
+        self.linked_frames.append(linked_body)
 
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked body move.")
@@ -270,7 +274,7 @@ class MujocoARConnector:
             raise ValueError("Must set the MuJoCo model and data to have a linked site.")
 
         site_id =  mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_SITE, name)
-        linked_site = LinkedTag(
+        linked_site = LinkedFrame(
             id=site_id,
             kind = 1,
             scale=scale,
@@ -281,7 +285,7 @@ class MujocoARConnector:
             disable_rot = disable_rot,
         )
         
-        self.linked_tags.append(linked_site)
+        self.linked_frames.append(linked_site)
 
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked site move.")
@@ -305,7 +309,7 @@ class MujocoARConnector:
             raise ValueError("Must set the MuJoCo model and data to have a linked geom.")
 
         geom_id =  mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_GEOM, name)
-        linked_geom = LinkedTag(
+        linked_geom = LinkedFrame(
             id=geom_id,
             kind = 2,
             scale=scale,
@@ -316,12 +320,12 @@ class MujocoARConnector:
             disable_rot = disable_rot,
         )
         
-        self.linked_tags.append(linked_geom)
+        self.linked_frames.append(linked_geom)
 
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked geom move.")
 
-class LinkedTag:
+class LinkedFrame:
     
     def __init__(self, id, kind, scale, translation, toggle_fn, button_fn, disable_pos, disable_rot):
         self.id = id
@@ -334,7 +338,7 @@ class LinkedTag:
         self.disable_rot = disable_rot
         self.last_toggle = False
 
-    def update(self, mujoco_model, latest_data):
+    def update(self, mujoco_model, mujoco_data, latest_data):
 
         pose = np.identity(4)
         pose[0:3,0:3] = latest_data["rotation"]
@@ -360,10 +364,17 @@ class LinkedTag:
         mujoco.mju_mat2Quat(quat, latest_data["rotation"].flatten())
 
         if self.kind == 0: # body
-            if not self.disable_rot:
-                mujoco_model.body_quat[self.id] = quat
-            if not self.disable_pos:
-                mujoco_model.body_pos[self.id] = pose[0:3,3].tolist()
+            mocap_id = mujoco_model.body(self.id).mocapid[0]
+            if mocap_id != -1:
+                if not self.disable_rot:
+                    mujoco_data.mocap_quat[mocap_id] = quat
+                if not self.disable_pos:
+                    mujoco_data.mocap_pos[mocap_id] = pose[0:3,3].tolist()
+            else:
+                if not self.disable_rot:
+                    mujoco_model.body_quat[self.id] = quat
+                if not self.disable_pos:
+                    mujoco_model.body_pos[self.id] = pose[0:3,3].tolist()
 
         elif self.kind == 1: # site
             if not self.disable_rot:
