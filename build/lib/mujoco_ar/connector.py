@@ -118,8 +118,8 @@ class MujocoARConnector:
                         rotation = np.array(data['rotation'])
                         position = np.array(data['position'])
                         self.latest_data["rotation"] = rotation
-                        self.latest_data["position"] = np.array([-position[2],-position[0],position[1]]).astype(float)
-                        # self.latest_data["position"] = np.array([position[0],position[1],position[2]]).astype(float)
+                        # self.latest_data["position"] = np.array([-position[2],-position[0],position[1]]).astype(float)
+                        self.latest_data["position"] = np.array([position[0],position[1],position[2]]).astype(float)
                         if self.reset_position_values is not None and self.latest_data["position"].dtype == self.reset_position_values.dtype:
                             self.latest_data["position"] -= self.reset_position_values
                         self.latest_data["button"] = data.get('button', False)
@@ -219,14 +219,16 @@ class MujocoARConnector:
         """
         return self.latest_data
     
-    def link_body(self, name, scale=1.0, translation=np.zeros(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_body(self, name, scale=1.0, translation=np.zeros(3), post_transform=np.identity(4), pre_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked body to be directly controlled by the AR data as opposed to you doing it manually.
 
         Args:
             body_name (str): The name of the body in MuJoCo.
             scale (float): Scalar number to multiply the positions from AR kit by (done before transformation)
-            translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
+            translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0 and before the pose transforms)
+            post_transform (numpy array of shape (4,4)): Transformation to post-multiply the recieved pose with (done after the translation)
+            pre_transform (numpy array of shape (4,4)): Transformation to pre-multiply the recieved pose with (done after the translation)
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
             disable_pos (bool): if true, does not update the position of the geom
@@ -241,9 +243,11 @@ class MujocoARConnector:
 
         linked_body = LinkedFrame(
             id=body_id,
-            kind=0,
+            frame_type=0,
             scale=scale,
             translation=translation,
+            post_transform=post_transform,
+            pre_transform=pre_transform,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
@@ -255,7 +259,7 @@ class MujocoARConnector:
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked body move.")
             
-    def link_site(self, name, scale=1.0, translation=np.zeros(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_site(self, name, scale=1.0, translation=np.zeros(3), post_transform=np.identity(4), pre_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked site to be directly controlled by the AR data as opposed to you doing it manually.
 
@@ -263,6 +267,8 @@ class MujocoARConnector:
             site_name (str): The name of the site in MuJoCo.
             scale (float): Scalar number to multiply the positions from AR kit by (done before transformation)
             translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
+            post_transform (numpy array of shape (4,4)): Transformation to post-multiply the recieved pose with (done after the translation)
+            pre_transform (numpy array of shape (4,4)): Transformation to pre-multiply the recieved pose with (done after the translation)
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
             disable_pos (bool): if true, does not update the position of the geom
@@ -276,9 +282,11 @@ class MujocoARConnector:
         site_id =  mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_SITE, name)
         linked_site = LinkedFrame(
             id=site_id,
-            kind = 1,
+            frame_type = 1,
             scale=scale,
             translation=translation,
+            post_transform=post_transform,
+            pre_transform=pre_transform,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
@@ -290,7 +298,7 @@ class MujocoARConnector:
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked site move.")
 
-    def link_geom(self, name, scale=1.0, translation=np.zeros(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_geom(self, name, scale=1.0, translation=np.zeros(3), post_transform=np.identity(4), pre_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked geom to be directly controlled by the AR data as opposed to you doing it manually.
 
@@ -298,6 +306,8 @@ class MujocoARConnector:
             geom_name (str): The name of the geom in MuJoCo.
             scale (float): Scalar number to multiply the positions from AR kit by (done before transformation)
             translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
+            post_transform (numpy array of shape (4,4)): Transformation to post-multiply the recieved pose with (done after the translation)
+            pre_transform (numpy array of shape (4,4)): Transformation to pre-multiply the recieved pose with (done after the translation)
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
             disable_pos (bool): if true, does not update the position of the geom
@@ -311,9 +321,11 @@ class MujocoARConnector:
         geom_id =  mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_GEOM, name)
         linked_geom = LinkedFrame(
             id=geom_id,
-            kind = 2,
+            frame_type = 2,
             scale=scale,
             translation=translation,
+            post_transform=post_transform,
+            pre_transform=pre_transform,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
@@ -327,11 +339,13 @@ class MujocoARConnector:
 
 class LinkedFrame:
     
-    def __init__(self, id, kind, scale, translation, toggle_fn, button_fn, disable_pos, disable_rot):
+    def __init__(self, id, frame_type, scale, translation, post_transform, pre_transform, toggle_fn, button_fn, disable_pos, disable_rot):
         self.id = id
-        self.kind = kind
+        self.frame_type = frame_type
         self.scale = scale
         self.translation = translation
+        self.post_transform = post_transform
+        self.pre_transform = pre_transform
         self.button_fn = button_fn
         self.toggle_fn = toggle_fn
         self.disable_pos = disable_pos
@@ -349,6 +363,8 @@ class LinkedFrame:
         # Applying translation
         if self.translation is not None:
             pose[0:3,3] += self.translation
+        # Applying transforms
+        pose = self.post_transform @ pose @ self.pre_transform
     
         # Updating Toggle Button Variable 
         if latest_data["toggle"] is not None and self.toggle_fn is not None and self.last_toggle != latest_data["toggle"]:
@@ -363,7 +379,7 @@ class LinkedFrame:
         quat = np.zeros(4)
         mujoco.mju_mat2Quat(quat, latest_data["rotation"].flatten())
 
-        if self.kind == 0: # body
+        if self.frame_type == 0: # body
             mocap_id = mujoco_model.body(self.id).mocapid[0]
             if mocap_id != -1:
                 if not self.disable_rot:
@@ -376,13 +392,13 @@ class LinkedFrame:
                 if not self.disable_pos:
                     mujoco_model.body_pos[self.id] = pose[0:3,3].tolist()
 
-        elif self.kind == 1: # site
+        elif self.frame_type == 1: # site
             if not self.disable_rot:
                 mujoco_model.site_quat[self.id] = quat
             if not self.disable_pos:
                 mujoco_model.site_pos[self.id] = pose[0:3,3].tolist()
 
-        elif self.kind == 2: # geom
+        elif self.frame_type == 2: # geom
             if not self.disable_rot:
                 mujoco_model.geom_quat[self.id] = quat
             if not self.disable_pos:
