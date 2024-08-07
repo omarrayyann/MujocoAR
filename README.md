@@ -1,7 +1,13 @@
 
 # MujocoAR
 
-A Python package that allows the retrieval of ARKit data from a connected iOS device for usage in MuJoCo.
+A Python package that allows the retrieval of ARKit data from a connected iOS device for usage in MuJoCo or other python applications.
+
+## Examples
+
+| Pick and Place | PushT |
+|--------|----------|
+![ScreenRecording2024-08-07at10 20 23PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/91647d6e-e0af-426d-a2b1-7df453b8c8a6)
 
 ## Installation
 
