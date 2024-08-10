@@ -11,7 +11,7 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
           <a href="https://github.com/omarrayyann/mujoco_fruit_picking" target="_blank">MuJoCo Fruits Pick and Place</a>
       </th>
       <th colspan="2">
-          <a href="https://github.com/omarrayyann/mujoco_fruit_picking" target="_blank">MuJoCo PushT</a>
+          <a href="https://github.com/omarrayyann/mujoco_pusht" target="_blank">MuJoCo PushT</a>
       </th>
   </tr>
   <tr>
