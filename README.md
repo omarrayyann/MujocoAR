@@ -50,7 +50,7 @@ Here's an example of how to use MujocoAR in your Python project:
 from mujoco_ar import MujocoARConnector
 
 # Initialize the connector with your desired parameters
-connector = MujocoARConnector(ar_frequency=20)
+connector = MujocoARConnector(mujoco_model=model,mujoco_data=data)
 
 # Start the connector
 connector.start()
