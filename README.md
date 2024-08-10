@@ -26,12 +26,12 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
       </th>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/1d74ddb7-1f43-4ce4-b994-327d4071eac5" width="500px" /></td>
-    <td><img src="https://github.com/user-attachments/assets/8fd2b0ae-f90a-4df5-b114-3feac7c87e37" width="500px" /></td>
-    <td><img src="https://github.com/user-attachments/assets/286428d9-93bf-456b-9ef1-322793c0bb3a" width="500px" /></td>
-    <td><img src="https://github.com/user-attachments/assets/3d496ce1-0b5d-4a1f-a6d2-dc2e19d1e3d8" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/7a00b71e-7d81-40bd-aee6-709feb0e9a82" width="800px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/c1e927c5-a4af-4c95-a6d0-fe7f8a026c34" width="800px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/a58ed764-4e05-40a5-b26a-5bd896584f34" width="800px" /></td>
   </tr>
 </table>
+
 
 <table>
   <tr>
