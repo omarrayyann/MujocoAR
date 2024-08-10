@@ -7,6 +7,11 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
 
 <table>
   <tr>
+    <th colspan="4">
+         Position Only
+      </th>
+  </tr>
+  <tr>
     <th colspan="2">
           <a href="https://github.com/omarrayyann/mujoco_fruit_picking" target="_blank">MuJoCo Fruits Pick and Place</a>
       </th>
@@ -19,6 +24,11 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
     <td><img src="https://github.com/user-attachments/assets/8fd2b0ae-f90a-4df5-b114-3feac7c87e37" width="800px" /></td>
     <td><img src="https://github.com/user-attachments/assets/c1e927c5-a4af-4c95-a6d0-fe7f8a026c34" width="800px" /></td>
     <td><img src="https://github.com/user-attachments/assets/a58ed764-4e05-40a5-b26a-5bd896584f34" width="800px" /></td>
+  </tr>
+  <tr>
+    <th colspan="4">
+         Position and Rotation
+      </th>
   </tr>
 </table>
 
