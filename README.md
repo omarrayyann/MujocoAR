@@ -8,7 +8,7 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
 <table>
   <tr>
     <th colspan="4">
-         Position Only
+         Position Control
       </th>
   </tr>
   <tr>
@@ -27,7 +27,7 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
   </tr>
   <tr>
     <th colspan="4">
-         Position and Rotation
+         Position and Rotation Control
       </th>
   </tr>
 </table>
