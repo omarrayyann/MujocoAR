@@ -3,10 +3,20 @@
 
 A Python package that allows the retrieval of ARKit data from a connected iOS device for usage in MuJoCo or other python applications.
 
-## Examples
+## Demos
 
-| Pick and Place | PushT |
-|--------|----------|
+<table>
+  <tr>
+    <th>f</th>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/1d74ddb7-1f43-4ce4-b994-327d4071eac5" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/8fd2b0ae-f90a-4df5-b114-3feac7c87e37" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/286428d9-93bf-456b-9ef1-322793c0bb3a" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/3d496ce1-0b5d-4a1f-a6d2-dc2e19d1e3d8" width="500px" /></td>
+  </tr>
+</table>
+
 ![ScreenRecording2024-08-07at10 20 23PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/91647d6e-e0af-426d-a2b1-7df453b8c8a6)
 
 ## Installation
