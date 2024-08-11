@@ -1,7 +1,7 @@
 
-# MujocoAR
+# MuJoCo AR [![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/)
 
-A Python package that allows the retrieval of ARKit data from a connected iOS device for usage in MuJoCo or other python applications.
+A [MuJoCo](https://github.com/google-deepmind/mujoco) plugin that allows the retrieval of ARKit data from a connected iOS device to control linked MuJoCo frames. It can be also used for non-MuJoCo applications (check the felixble setup down).
 
 ## Demos
 
