@@ -48,9 +48,25 @@ pip install mujoco_ar
 
 ## Usage
 
-### Basic MuJoCo Setup
+### Quick MuJoCo Setup
 
 This setup allows you to directly control a MuJoCo frame (body, geom, or site), with the frame's position and orientation matching the ARKit data received from the connected iOS device.
+
+```python
+from mujoco_ar import MujocoARConnector
+
+# Initialize the connector with your desired parameters
+mj_ar = MujocoARConnector(mujoco_model=my_model,mujoco_data=my_data)
+
+# Link a MuJoCo frame (link_body(), link_geom() or link_site())
+mj_ar.link_body(name="eef_target")
+
+# Start the connector
+mj_ar.start()
+```
+### Full MuJoCo Setup
+
+This setup allows you to directly control a MuJoCo frame (body, geom, or site) by matching its position and orientation with the ARKit data received from a connected iOS device. Both translation and rotation can be applied, and you can control the scaling of the position. Additionally, you can pass functions to button_fn and toggle_fn to be triggered when the button or toggle are activated
 
 ```python
 from mujoco_ar import MujocoARConnector
@@ -63,7 +79,7 @@ mj_ar = MujocoARConnector(
     debug=False                                          # Optional, defaults to False if not provided
 )
 
-# Link a MuJoCo frame
+# Link a MuJoCo frame (link_body(), link_geom() or link_site())
 mj_ar.link_body(
     name="eef_target",
     scale=1.0,                                           # Optional, defaults to 1.0 if not provided
@@ -81,7 +97,7 @@ mj_ar.start()
 
 ### Flexible Setup (works without MuJoCo):
 
-This setup allows you to use the MuJoCo AR connector independently of MuJoCo. You can retrieve ARKit data such as position, rotation, button, and toggle states directly from a connected iOS device, making it flexible for usage in various applications beyond physics simulations.
+You can retrieve the ARKit data including the position, rotation, button, and toggle states directly from a connected iOS device, making it flexible for usage in various applications beyond physics simulations.
 
 ```python
 from mujoco_ar import MujocoARConnector
