@@ -32,6 +32,7 @@ A Python package that allows the retrieval of ARKit data from a connected iOS de
   </tr>
 </table>
 
+Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR).
 
 ## Installation
 
