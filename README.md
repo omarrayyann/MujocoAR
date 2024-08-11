@@ -1,6 +1,5 @@
 
 # MuJoCo AR 
-[![Build](https://img.shields.io/github/actions/workflow/status/omarrayyann/mujoco_ar/ci.yml?branch=main)](https://github.com/omarrayyann/mujoco_ar/actions)
 [![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/)
 
 MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](www.orayyan.com).
