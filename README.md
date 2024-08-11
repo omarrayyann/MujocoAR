@@ -1,9 +1,7 @@
 
 # MuJoCo AR [![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/)
 
-MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below).
-
-iOS App Download link: www.orayyan.com
+MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](www.orayyan.com).
 
 ## Demos
 
@@ -38,7 +36,9 @@ Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can b
 
 ## Installation
 
-You can install the package using pip:
+1. iOS App: Download the iOS app from the App Store [here](www.orayyan.com)
+
+2. Python Package: Install the Python package using pip:
 
 ```bash
 pip install mujoco_ar
@@ -47,6 +47,8 @@ pip install mujoco_ar
 ## Usage
 
 ### Basic MuJoCo Setup
+
+This setup allows you to directly control a MuJoCo frame (body, geom, or site), with the frame's position and orientation matching the ARKit data received from the connected iOS device.
 
 ```python
 from mujoco_ar import MujocoARConnector
@@ -76,6 +78,8 @@ mj_ar.start()
 ```
 
 ### Flexible Setup (works without MuJoCo):
+
+This setup allows you to use the MuJoCo AR connector independently of MuJoCo. You can retrieve ARKit data such as position, rotation, button, and toggle states directly from a connected iOS device, making it flexible for usage in various applications beyond physics simulations.
 
 ```python
 from mujoco_ar import MujocoARConnector
