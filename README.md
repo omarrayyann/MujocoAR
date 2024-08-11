@@ -31,6 +31,18 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
          Position and Rotation Control
       </th>
   </tr>
+   <tr>
+    <th colspan="2">
+          <a href="https://github.com/omarrayyann/mujoco_study_desk" target="_blank">MuJoCo Study Desk</a>
+      </th>
+      <th colspan="2">
+          <a href="https://github.com/omarrayyann/mujoco_pusht" target="_blank">MuJoCo PushT</a>
+      </th>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/0e114e00-ce1d-4779-b3ac-e22d950273c2" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/5d1fdf9c-033b-4472-823e-fcb874b41db0" width="500px" /></td>
+  </tr>
 </table>
 
 Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR).
