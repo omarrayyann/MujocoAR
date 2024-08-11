@@ -46,39 +46,51 @@ pip install mujoco_ar
 
 Here's an example of how to use MujocoAR in your Python project:
 
-### Basic Setup (without MuJoCo cameras)
+### Basic MuJoCo Setup
 
 ```python
 from mujoco_ar import MujocoARConnector
 
 # Initialize the connector with your desired parameters
-connector = MujocoARConnector(mujoco_model=model,mujoco_data=data)
-
-# Start the connector
-connector.start()
-
-# Get latest AR data (after connecting the iOS device, check guide below)
-data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "grasp": bool}
-```
-
-### Setup with a MuJoCo camera
-
-```python
-from mujoco_ar import MujocoARConnector
-
-# Initialize the connector with your desired parameters
-connector = MujocoARConnector(
+mj_ar = MujocoARConnector(
     mujoco_model=my_model, 
     mujoco_data=my_data, 
-    camera_name='my_camera',
-    camera_frequency=10,
+    port=8888,            # Optional, defaults to 8888 if not provided
+    debug=False,          # Optional, defaults to False if not provided
 )
+
+
+# Link a MuJoCo frame (link_body(), link_site(), link_geom())
+mj_ar.link_body(
+    name = "eef_target",
+    scale = 1.0,                                                # Optional, defaults to 1.0 if not provided
+    position_origin = np.array([0.0,0.0,0.0]),                  # Optional, defaults to [0,0,0] if not provided
+    rotation_origin = np.identity(3),                           # Optional, defaults to I(3) if not provided
+    toggle_fn = # function to call once the toggle is pressed   # Optional, calls nothing if not provided
+    button_fn = # function to call when the button is pressed   # Optional, calls nothing if not provided
+    disable_pos =  False,                                       # Optional, defaults to False if not provided
+    disable_rot =  False,                                       # Optional, defaults to False if not provided
+)
+
+ link_body(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+
+# Start the connector
+mj_ar.start()
+```
+
+### Flexible Setup (works without MuJoCo):
+
+```python
+from mujoco_ar import MujocoARConnector
+
+# Initialize the connector with your desired parameters
+connector = MujocoARConnector()
 
 # Start the connector
 connector.start()
 
 # Get latest AR data (after connecting the iOS device, check guide below)
-data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "grasp": bool}
+data = get_latest_data() # {"position": (3,1), "rotation": (3,3), "button": bool, "toggle", bool}
 ```
 
 ## License
