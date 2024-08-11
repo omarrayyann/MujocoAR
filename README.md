@@ -65,7 +65,7 @@ mj_ar.start()
 ```
 ### Full MuJoCo Setup
 
-This setup allows you to directly control a MuJoCo frame (body, geom, or site) by matching its position and orientation with the ARKit data received from a connected iOS device. Both translation and rotation can be applied, and you can control the scaling of the position. Additionally, you can pass functions to button_fn and toggle_fn to be triggered when the button or toggle are activated
+In addition to what the quick setup allows you to do, this setup allows you to automate the applying of a translation, rotation or scaling of the recieved pose. Additionally, you can pass functions to button_fn and toggle_fn to be triggered when the button or toggle are activated
 
 ```python
 from mujoco_ar import MujocoARConnector
