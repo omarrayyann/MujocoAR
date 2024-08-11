@@ -57,6 +57,8 @@ Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can b
 pip install mujoco_ar
 ```
 
+Check out a simple example at ```demo/simple_example.py```
+
 ## Usage
 
 ### Quick MuJoCo Setup
