@@ -40,8 +40,8 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
       </th>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/0e114e00-ce1d-4779-b3ac-e22d950273c2" width="500px" /></td>
-    <td><img src="https://github.com/user-attachments/assets/5d1fdf9c-033b-4472-823e-fcb874b41db0" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/e70569ce-5ade-4161-95ab-007b1d612e0a" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/88635d5e-63f3-41b3-af83-3af03588c84f" width="500px" /></td>
   </tr>
 </table>
 
