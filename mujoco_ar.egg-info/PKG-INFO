@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: mujoco_ar
-Version: 0.9.6
+Version: 0.9.9
 Summary: An AR controller designed to seamlessly control objects in MuJoCo and for other general uses by receiving position and rotation data from a connected iOS application.
 Home-page: https://github.com/omarrayyann/mujocoar
 Author: Omar Rayyan

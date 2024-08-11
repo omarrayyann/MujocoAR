@@ -17,7 +17,7 @@ class MujocoARConnector:
     A connector to receive position and rotation data from a connected application.
     """
 
-    def __init__(self, port=8888, mujoco_model=None, mujoco_data=None, camera_name=None, camera_resolution=(240, 320), controls_frequency=100, camera_frequency=1, debug=False):
+    def __init__(self, mujoco_model=None, mujoco_data=None, port=8888, debug=False):
         """
         Initialize the connector with the given port and other parameters.
 
@@ -25,38 +25,27 @@ class MujocoARConnector:
             port (int): The port on which the connector listens.
             mujoco_model: The MuJoCo model object.
             mujoco_data: The MuJoCo data object.
-            camera_name (str): The name of the camera to use.
-            camera_resolution (tuple): The resolution of the camera.
-            controls_frequency (int): The frequency of control updates.
-            camera_frequency (int): The frequency of camera updates.
             debug (bool): Enable debug mode for verbose output.
         """
-        print("started")
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         self.ip_address = s.getsockname()[0]
-        print("finish")
         self.port = port
         self.latest_data = {
             "rotation": None,
             "position": None,
-            "grasp": None
+            "button": None,
+            "toggle": None,
         }
         self.server = None
         self.connected_clients = set()
         self.debug = debug
         self.mujoco_model = mujoco_model
         self.mujoco_data = mujoco_data
-        self.camera_name = camera_name
-        self.controls_frequency = controls_frequency
-        self.camera_frequency = camera_frequency
-        self.camera_resolution = camera_resolution
+        self.controls_frequency = 10000
         self.reset_position_values = np.array([0.0, 0.0, 0.0])
         self.get_updates = True
         self.linked_frames = []
-
-        if camera_name is not None and (mujoco_model is None or mujoco_data is None):
-            warnings.warn("Must set the MuJoCo model and data to have the camera transmission work.")
 
     def reset_position(self):
         """
@@ -80,26 +69,30 @@ class MujocoARConnector:
         self.get_updates = True
 
     def _kill_process_using_port(self, port):
-        """
-        Kill the process using the given port.
+            """
+            Kill the process using the given port.
 
-        Args:
-            port (int): The port to check for existing processes.
-        """
-        for proc in psutil.process_iter(['pid', 'name', 'username']):
-            try:
-                for conns in proc.connections(kind='inet'):
-                    if conns.laddr.port == port:
-                        pid = proc.info['pid']
-                        if platform.system() == "Windows":
-                            os.system(f'taskkill /PID {pid} /F')
-                        else:
-                            os.kill(pid, signal.SIGKILL)
-                        if self.debug:
-                            print(f"[INFO] Killed process {proc.info['name']} with PID {pid} using port {port}")
-            except (psutil.AccessDenied, psutil.NoSuchProcess):
-                pass
-
+            Args:
+                port (int): The port to check for existing processes.
+            """
+            for proc in psutil.process_iter(['pid', 'name', 'username']):
+                try:
+                    proc_info = proc.as_dict(attrs=['pid', 'name', 'connections'])
+                    for conn in proc_info.get('connections', []):
+                        if conn.status == psutil.CONN_LISTEN and conn.laddr.port == port:
+                            pid = proc_info['pid']
+                            if platform.system() == "Windows":
+                                os.system(f'taskkill /PID {pid} /F')
+                            else:
+                                os.kill(pid, signal.SIGKILL)
+                            if self.debug:
+                                print(f"[INFO] Killed process {proc_info['name']} with PID {pid} using port {port}")
+                except (psutil.AccessDenied, psutil.NoSuchProcess, psutil.ZombieProcess) as e:
+                    if self.debug:
+                        print(f"[WARN] Could not access process information: {e}")
+                except Exception as e:
+                    if self.debug:
+                        print(f"[ERROR] Unexpected error: {e}")
     async def _handle_connection(self, websocket, path):
         """
         Handle incoming connections and messages from the application.
@@ -118,13 +111,12 @@ class MujocoARConnector:
                         rotation = np.array(data['rotation'])
                         position = np.array(data['position'])
                         self.latest_data["rotation"] = rotation
-                        # self.latest_data["position"] = np.array([-position[2],-position[0],position[1]]).astype(float)
                         self.latest_data["position"] = np.array([position[0],position[1],position[2]]).astype(float)
                         if self.reset_position_values is not None and self.latest_data["position"].dtype == self.reset_position_values.dtype:
                             self.latest_data["position"] -= self.reset_position_values
                         self.latest_data["button"] = data.get('button', False)
                         self.latest_data["toggle"] = data.get('toggle', False)
-
+                    
                         for linked_frames in self.linked_frames:
                             linked_frames.update(self.mujoco_model, self.mujoco_data, self.latest_data.copy())
 
@@ -146,47 +138,13 @@ class MujocoARConnector:
         self.mujoco_model = mujoco_model
         self.mujoco_data = mujoco_data
 
-    def get_last_camera_frame(self):
-        """
-        Get the last camera frame
-
-        Returns:
-            np.ndarray: The last camera frame in BGR format.
-        """
-        renderer = mujoco.Renderer(self.mujoco_model, height=self.camera_resolution[0], width=self.camera_resolution[1])
-        renderer.update_scene(self.mujoco_data, self.camera_name)
-        frame = cv2.cvtColor(renderer.render(), cv2.COLOR_RGB2BGR)
-        return frame
-
-    def set_camera(self, camera_name):
-        """
-        Set the camera name.
-
-        Args:
-            camera_name (str): The name of the camera.
-        """
-        if self.mujoco_model is None or self.mujoco_data is None:
-            warnings.warn("Must set the MuJoCo model and data to have the camera transmission working.")
-        self.camera_name = camera_name    
-
-    async def _send_frame(self):
-        """
-        Send an image to all connected applications.
-        """
-        i = 0
-        while True:
-            if self.connected_clients and self.camera_name and self.mujoco_model and self.mujoco_data:
-                image_array = self.get_last_camera_frame()
-                image_bytes = cv2.imencode('.jpg', image_array)[1].tobytes()
-                await asyncio.gather(*[client.send(image_bytes) for client in self.connected_clients])
-            await asyncio.sleep(1 / self.camera_frequency)
-
     async def _control_update(self):
         """
         Update controls at the specified frequency.
         """
         while True:
             # Handle control updates here
+            
             await asyncio.sleep(1 / self.controls_frequency)
 
     async def _start(self):
@@ -195,14 +153,13 @@ class MujocoARConnector:
         """
         self._kill_process_using_port(self.port)
         self._kill_process_using_port(self.port)
-        self._kill_process_using_port(self.port)
 
         print(f"[INFO] MujocoARConnector Starting...")
         self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port)
         print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}")
 
         # Start the camera and control loops
-        await asyncio.gather(self._send_frame(), self._control_update(), self.server.wait_closed())
+        await asyncio.gather(self._control_update(), self.server.wait_closed())
 
     def start(self):
         """
@@ -219,16 +176,15 @@ class MujocoARConnector:
         """
         return self.latest_data
     
-    def link_body(self, name, scale=1.0, translation=np.zeros(3), post_transform=np.identity(4), pre_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_body(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked body to be directly controlled by the AR data as opposed to you doing it manually.
 
         Args:
             body_name (str): The name of the body in MuJoCo.
-            scale (float): Scalar number to multiply the positions from AR kit by (done before transformation)
-            translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0 and before the pose transforms)
-            post_transform (numpy array of shape (4,4)): Transformation to post-multiply the recieved pose with (done after the translation)
-            pre_transform (numpy array of shape (4,4)): Transformation to pre-multiply the recieved pose with (done after the translation)
+            scale (float): Scalar number to multiply the positions from AR kit by
+            position_origin (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
+            rotation (numpy array of shape (3,3)): Rotation to be done on the retrived pose relative to the global frame (done after scaling if scale is not 1.0)
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
             disable_pos (bool): if true, does not update the position of the geom
@@ -245,9 +201,8 @@ class MujocoARConnector:
             id=body_id,
             frame_type=0,
             scale=scale,
-            translation=translation,
-            post_transform=post_transform,
-            pre_transform=pre_transform,
+            position_origin=position_origin,
+            rotation_origin=rotation_origin,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
@@ -259,16 +214,15 @@ class MujocoARConnector:
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked body move.")
             
-    def link_site(self, name, scale=1.0, translation=np.zeros(3), post_transform=np.identity(4), pre_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_site(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked site to be directly controlled by the AR data as opposed to you doing it manually.
 
         Args:
             site_name (str): The name of the site in MuJoCo.
-            scale (float): Scalar number to multiply the positions from AR kit by (done before transformation)
-            translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
-            post_transform (numpy array of shape (4,4)): Transformation to post-multiply the recieved pose with (done after the translation)
-            pre_transform (numpy array of shape (4,4)): Transformation to pre-multiply the recieved pose with (done after the translation)
+            scale (float): Scalar number to multiply the positions from AR kit by
+            position_origin (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
+            rotation_origin (numpy array of shape (3,3)): Rotation to be done on the retrived pose relative to the global frame (done after scaling if scale is not 1.0)
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
             disable_pos (bool): if true, does not update the position of the geom
@@ -284,9 +238,8 @@ class MujocoARConnector:
             id=site_id,
             frame_type = 1,
             scale=scale,
-            translation=translation,
-            post_transform=post_transform,
-            pre_transform=pre_transform,
+            position_origin=position_origin,
+            rotation_origin=rotation_origin,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
@@ -298,16 +251,15 @@ class MujocoARConnector:
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked site move.")
 
-    def link_geom(self, name, scale=1.0, translation=np.zeros(3), post_transform=np.identity(4), pre_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_geom(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked geom to be directly controlled by the AR data as opposed to you doing it manually.
 
         Args:
             geom_name (str): The name of the geom in MuJoCo.
-            scale (float): Scalar number to multiply the positions from AR kit by (done before transformation)
-            translation (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
-            post_transform (numpy array of shape (4,4)): Transformation to post-multiply the recieved pose with (done after the translation)
-            pre_transform (numpy array of shape (4,4)): Transformation to pre-multiply the recieved pose with (done after the translation)
+            scale (float): Scalar number to multiply the positions from AR kit by
+            position_origin (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
+            rotation_origin (numpy array of shape (3,3)): Rotation to be done on the retrived pose relative to the global frame (done after scaling if scale is not 1.0)
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
             disable_pos (bool): if true, does not update the position of the geom
@@ -323,9 +275,8 @@ class MujocoARConnector:
             id=geom_id,
             frame_type = 2,
             scale=scale,
-            translation=translation,
-            post_transform=post_transform,
-            pre_transform=pre_transform,
+            position_origin=position_origin,
+            rotation_origin=rotation_origin,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
@@ -339,13 +290,12 @@ class MujocoARConnector:
 
 class LinkedFrame:
     
-    def __init__(self, id, frame_type, scale, translation, post_transform, pre_transform, toggle_fn, button_fn, disable_pos, disable_rot):
+    def __init__(self, id, frame_type, scale, position_origin, rotation_origin, toggle_fn, button_fn, disable_pos, disable_rot):
         self.id = id
         self.frame_type = frame_type
         self.scale = scale
-        self.translation = translation
-        self.post_transform = post_transform
-        self.pre_transform = pre_transform
+        self.position_origin = position_origin
+        self.rotation_origin = rotation_origin
         self.button_fn = button_fn
         self.toggle_fn = toggle_fn
         self.disable_pos = disable_pos
@@ -361,11 +311,11 @@ class LinkedFrame:
         # Applying scale
         pose[0:3,3] = pose[0:3,3]*self.scale
         # Applying translation
-        if self.translation is not None:
-            pose[0:3,3] += self.translation
-        # Applying transforms
-        pose = self.post_transform @ pose @ self.pre_transform
-    
+        if self.position_origin is not None:
+            pose[0:3,3] += self.position_origin
+        # Applying rotation
+        pose[0:3,0:3] = pose[0:3,0:3].T@self.rotation_origin
+
         # Updating Toggle Button Variable 
         if latest_data["toggle"] is not None and self.toggle_fn is not None and self.last_toggle != latest_data["toggle"]:
             self.toggle_fn()
@@ -377,7 +327,7 @@ class LinkedFrame:
         
         # Converting the rotation matrix to quaternion
         quat = np.zeros(4)
-        mujoco.mju_mat2Quat(quat, latest_data["rotation"].flatten())
+        mujoco.mju_mat2Quat(quat, pose[0:3,0:3].flatten())
 
         if self.frame_type == 0: # body
             mocap_id = mujoco_model.body(self.id).mocapid[0]
