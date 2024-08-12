@@ -126,6 +126,14 @@ connector.start()
 # Retrieve the latest AR data (after connecting the iOS device, see the guide below)
 data = connector.get_latest_data()  # Returns {"position": (3, 1), "rotation": (3, 3), "button": bool, "toggle": bool}
 ```
+## Additional Functions
+
+```python
+connector.pause_updates()  # Temporarily stops receiving updates from the connected device.
+connector.resume_updates() # Resumes receiving updates from the connected device.
+connector.reset_position() # Resets the current position as the origin (0,0,0).
+
+```
 
 ## Author
 
