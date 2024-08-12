@@ -1,6 +1,6 @@
+# <img src="https://github.com/user-attachments/assets/9b731c7f-7ad1-4607-90aa-f6ff1830a936" width="50" align="center" alt="Logo">&nbsp;&nbsp;MuJoCo AR
 
-# MuJoCo AR 
-[![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/)
+[![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](www.orayyan.com).
 
@@ -36,16 +36,18 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
           <a href="https://github.com/omarrayyann/mujoco_study_desk" target="_blank">MuJoCo Study Desk</a>
       </th>
       <th colspan="2">
-          <a href="https://github.com/omarrayyann/mujoco_pusht" target="_blank">MuJoCo PushT</a>
+          <a href="https://github.com/omarrayyann/mujoco_blocks_stacking" target="_blank">MuJoCo Blocks Stacking</a>
       </th>
   </tr>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/e70569ce-5ade-4161-95ab-007b1d612e0a" width="500px" /></td>
     <td><img src="https://github.com/user-attachments/assets/88635d5e-63f3-41b3-af83-3af03588c84f" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/dbb1dbb7-5dff-4c24-88fb-9f4b8afd7d8b" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/df43bb40-6e58-4e94-8d1c-a4fa90359d65" width="500px" /></td>
   </tr>
 </table>
 
-Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR).
+Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR). For a simpler environemnt that the ones shwon in the demo section above, check the example at ```demo/simple_example.py```
 
 ## Installation
 
@@ -122,6 +124,18 @@ connector.start()
 # Retrieve the latest AR data (after connecting the iOS device, see the guide below)
 data = connector.get_latest_data()  # Returns {"position": (3, 1), "rotation": (3, 3), "button": bool, "toggle": bool}
 ```
+## Additional Functions
+
+```python
+connector.pause_updates()  # Temporarily stops receiving updates from the connected device.
+connector.resume_updates() # Resumes receiving updates from the connected device.
+connector.reset_position() # Resets the current position as the origin (0,0,0).
+
+```
+
+## Acknowledgement
+
+Thanks to  [@kevinzakka](https://www.github.com/kevinzakka) for the [mink](https://github.com/kevinzakka/mink) and [mjctrl](https://github.com/kevinzakka/mjctrl) libraries, which are used in the provided demos.
 
 ## Author
 

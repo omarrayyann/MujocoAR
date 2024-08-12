@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: mujoco_ar
-Version: 1.0.0
+Version: 1.0.1
 Summary: An AR controller designed to seamlessly control objects in MuJoCo and for other general uses by receiving position and rotation data from a connected iOS application.
 Home-page: https://github.com/omarrayyann/mujocoar
 Author: Omar Rayyan
@@ -50,6 +50,18 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
     <th colspan="4">
          Position and Rotation Control
       </th>
+  </tr>
+   <tr>
+    <th colspan="2">
+          <a href="https://github.com/omarrayyann/mujoco_study_desk" target="_blank">MuJoCo Study Desk</a>
+      </th>
+      <th colspan="2">
+          <a href="https://github.com/omarrayyann/mujoco_pusht" target="_blank">MuJoCo PushT</a>
+      </th>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/e70569ce-5ade-4161-95ab-007b1d612e0a" width="500px" /></td>
+    <td><img src="https://github.com/user-attachments/assets/88635d5e-63f3-41b3-af83-3af03588c84f" width="500px" /></td>
   </tr>
 </table>
 

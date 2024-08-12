@@ -174,6 +174,7 @@ class MujocoARConnector:
         """
         self._kill_process_using_port(self.port)
         self._kill_process_using_port(self.port)
+        self._kill_process_using_port(self.port)
 
         print(f"[INFO] MujocoARConnector Starting...")
         self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port)
@@ -225,6 +226,7 @@ class MujocoARConnector:
             scale=scale,
             position_origin=position_origin,
             rotation_origin=rotation_origin,
+            pose_transform=pose_transform,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
             disable_pos = disable_pos,
