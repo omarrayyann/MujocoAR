@@ -135,6 +135,10 @@ connector.reset_position() # Resets the current position as the origin (0,0,0).
 
 ```
 
+## Acknowledgement
+
+Thanks to  [@kevinzakka](https://www.github.com/kevinzakka) for the [mink](https://github.com/kevinzakka/mink) and [mjctrl](https://github.com/kevinzakka/mjctrl) libraries, which are used in the provided demos.
+
 ## Author
 
 Omar Rayyan (olr7742@nyu.edu)
