@@ -47,7 +47,7 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
   </tr>
 </table>
 
-Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR).
+Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR). For a simpler environemnt that the ones shwon in the demo section above, check the example at ```demo/simple_example.py```
 
 ## Installation
 
@@ -58,8 +58,6 @@ Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can b
 ```bash
 pip install mujoco_ar
 ```
-
-Check out a simple example at ```demo/simple_example.py```
 
 ## Usage
 
