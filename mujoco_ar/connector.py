@@ -11,6 +11,7 @@ import threading
 import mujoco
 import warnings
 import platform
+import subprocess
 
 class MujocoARConnector:
     """
@@ -90,30 +91,30 @@ class MujocoARConnector:
         self.get_updates = True
 
     def _kill_process_using_port(self, port):
-            """
-            Kill the process using the given port.
+        """
+        Kill the process using the given port on Unix-based systems.
 
-            Args:
-                port (int): The port to check for existing processes.
-            """
-            for proc in psutil.process_iter(['pid', 'name', 'username']):
-                try:
-                    proc_info = proc.as_dict(attrs=['pid', 'name', 'connections'])
-                    for conn in proc_info.get('connections', []):
-                        if conn.status == psutil.CONN_LISTEN and conn.laddr.port == port:
-                            pid = proc_info['pid']
-                            if platform.system() == "Windows":
-                                os.system(f'taskkill /PID {pid} /F')
-                            else:
-                                os.kill(pid, signal.SIGKILL)
-                            if self.debug:
-                                print(f"[INFO] Killed process {proc_info['name']} with PID {pid} using port {port}")
-                except (psutil.AccessDenied, psutil.NoSuchProcess, psutil.ZombieProcess) as e:
+        Args:
+            port (int): The port to check for existing processes.
+        """
+        if platform.system() != "Windows":
+            try:
+                # Use lsof to find the process using the port
+                command = f"lsof -t -i:{port}"
+                pid = subprocess.check_output(command, shell=True).strip().decode()
+                if pid:
+                    os.kill(int(pid), signal.SIGKILL)
                     if self.debug:
-                        print(f"[WARN] Could not access process information: {e}")
-                except Exception as e:
+                        print(f"[INFO] Killed process with PID {pid} using port {port}")
+                else:
                     if self.debug:
-                        print(f"[ERROR] Unexpected error: {e}")
+                        print(f"[INFO] No process found using port {port}")
+            except subprocess.CalledProcessError as e:
+                if self.debug:
+                    print(f"[ERROR] Failed to kill process using port {port}: {e}")
+        else:
+            os.system(f'taskkill /PID {pid} /F')
+            
     async def _handle_connection(self, websocket, path):
         """
         Handle incoming connections and messages from the application.
@@ -172,17 +173,26 @@ class MujocoARConnector:
         """
         Start the connector.
         """
-        self._kill_process_using_port(self.port)
-        self._kill_process_using_port(self.port)
-        self._kill_process_using_port(self.port)
-
-        print(f"[INFO] MujocoARConnector Starting...")
-        self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port)
-        print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}")
+        attempt = 0
+        max_attempts = 10
+        while attempt < max_attempts:
+            self._kill_process_using_port(self.port)
+            await asyncio.sleep(0.1)
+            try:
+                print(f"[INFO] MujocoARConnector Starting on port {self.port}...")
+                self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port)
+                print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}")
+                break  # Exit the loop if server starts successfully
+            except OSError as e:
+                print(f"[WARNING] Port {self.port} is in use. Trying next port.")
+                self.port += 1  # Increment the port number
+                attempt += 1
+        else:
+            raise RuntimeError("Failed to start server on any port. Exceeded maximum attempts.")
 
         # Start the camera and control loops
         await asyncio.gather(self._control_update(), self.server.wait_closed())
-
+        
     def start(self):
         """
         Start the MujocoARConnector.
