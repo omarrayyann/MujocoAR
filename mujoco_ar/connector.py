@@ -39,6 +39,8 @@ class MujocoARConnector:
             "toggle": None,
         }
         self.server = None
+        self.ping_interval = 20000000000
+        self.ping_timeout = 10000000000
         self.connected_clients = set()
         self.debug = debug
         self.mujoco_model = mujoco_model
@@ -180,7 +182,7 @@ class MujocoARConnector:
             await asyncio.sleep(0.1)
             try:
                 print(f"[INFO] MujocoARConnector Starting on port {self.port}...")
-                self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port)
+                self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port,ping_interval=self.ping_interval,ping_timeout=self.ping_timeout)
                 print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}")
                 break  # Exit the loop if server starts successfully
             except OSError as e:
