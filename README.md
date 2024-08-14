@@ -4,7 +4,7 @@
 
 MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](https://apps.apple.com/ae/app/mujoco-ar/id6612039501).
 
-**NOTE: Incase of a latency, try connecting your pc to your deivce's hotpsot.**
+**NOTE: Incase of a latency, try connecting your pc to your deivce's hotpsot. The communication happens locally.**
 
 ## Demos
 
