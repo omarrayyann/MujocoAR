@@ -45,7 +45,6 @@ class MujocoARConnector:
         self.debug = debug
         self.mujoco_model = mujoco_model
         self.mujoco_data = mujoco_data
-        self.controls_frequency = 10000
         self.reset_position_values = np.array([0.0, 0.0, 0.0])
         self.get_updates = True
         self.linked_frames = []
@@ -68,9 +67,9 @@ class MujocoARConnector:
         """
         Stop the MujocoARConnector.
         """
-        # Run the stop server function in the event loop
-        asyncio.run(self._stop_server())
+        self.loop.call_soon_threadsafe(asyncio.create_task, self._stop_server())
 
+            
     def reset_position(self):
         """
         Reset the position to the current position, treating it as (0,0,0).
@@ -162,15 +161,6 @@ class MujocoARConnector:
         self.mujoco_model = mujoco_model
         self.mujoco_data = mujoco_data
 
-    async def _control_update(self):
-        """
-        Update controls at the specified frequency.
-        """
-        while True:
-            # Handle control updates here
-            
-            await asyncio.sleep(1 / self.controls_frequency)
-
     async def _start(self):
         """
         Start the connector.
@@ -193,13 +183,19 @@ class MujocoARConnector:
             raise RuntimeError("Failed to start server on any port. Exceeded maximum attempts.")
 
         # Start the camera and control loops
-        await asyncio.gather(self._control_update(), self.server.wait_closed())
+        await self.server.wait_closed()
         
     def start(self):
         """
         Start the MujocoARConnector.
         """
-        threading.Thread(target=lambda: asyncio.run(self._start())).start()
+        self.loop = asyncio.new_event_loop()
+        threading.Thread(target=self._run_event_loop).start()
+
+    def _run_event_loop(self):
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_until_complete(self._start())
+
 
     def get_latest_data(self):
         """
