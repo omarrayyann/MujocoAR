@@ -137,6 +137,10 @@ connector.reset_position() # Resets the current position as the origin (0,0,0).
 
 ```
 
+## How to contribute?
+
+Report any bugs you encounter to the [issue tracker](https://github.com/omarrayyann/MujocoAR/issues). Also, feel free to suggest any features. Those could be regarding the iOS app or the python package.
+
 ## Acknowledgement
 
 Thanks to  [@kevinzakka](https://www.github.com/kevinzakka) for the [mink](https://github.com/kevinzakka/mink) and [mjctrl](https://github.com/kevinzakka/mjctrl) libraries, which are used in the provided demos.
