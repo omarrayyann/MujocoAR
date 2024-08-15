@@ -2,11 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](https://apps.apple.com/ae/app/mujoco-ar/id6612039501).
-
-Tips:
-- Incase of a latency, try connecting your pc to your deivce's hotpsot. It should be way faster since the communication happens locally.
-- I usually configure the button to reset the joints of the robot to a certain state. I find this helpful especially at the begining where the ARKit data might fluctuate as it calibrates. 
+MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](https://apps.apple.com/ae/app/mujoco-ar/id6612039501). If you face issues, check the [FAQ](#faq) below.
 
 ## Demos
 
@@ -136,6 +132,25 @@ connector.resume_updates() # Resumes receiving updates from the connected device
 connector.reset_position() # Resets the current position as the origin (0,0,0).
 
 ```
+
+## FAQ
+
+#### How can I reduce latency?
+
+- If you're experiencing latency, try connecting your PC to your device's hotspot. This should significantly reduce latency if you're far from a router since the communication happens locally via WebSockets.
+
+#### It is not tracking my trajectory accurately. What can I do?
+
+- Make sure you're not covering the camera with your fingers. If the tracking is too sensitive, you can adjust the `scale` attribute when linking the frame to make it less reactive to minor movements. In my experience, the position retrived is more accurate than the rotation.
+
+#### Where can I start?
+
+- I highly recommend running `demo/simple.py` to test things out if you're just getting starting. This demo is configured to change the sphere's color with a button press and enlarge it with a toggle, providing a basic but effective introduction to a simple configuration.
+  
+#### Can I use it for a non-MuJoCo application?
+
+- Yes, check the [Flexible Setup](#flexible-setup-works-without-mujoco) out where you can retrive the pure ARKit position and rotation and use it as you wish. You wouldn't need to pass in the MuJoCo model and data in such a case.
+
 
 ## How to contribute?
 
