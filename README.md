@@ -110,7 +110,7 @@ mj_ar.start()
 
 ### Flexible Setup (works without MuJoCo):
 
-You can retrieve the ARKit data including the position, rotation, button, and toggle states directly from a connected iOS device, making it flexible for usage in various applications beyond physics simulations.
+You can retrieve the ARKit data including the position, rotation, button, and toggle states directly from a connected iOS device, making it flexible for usage in various applications beyond physics simulations. Try running ```mjpython demos/flexible_setup.py```.
 
 ```python
 from mujoco_ar import MujocoARConnector
