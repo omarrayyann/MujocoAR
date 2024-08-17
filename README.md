@@ -145,7 +145,7 @@ connector.reset_position() # Resets the current position as the origin (0,0,0).
 
 #### Where can I start?
 
-- I highly recommend running `demo/simple.py` to test things out if you're just getting starting. This demo is configured to change the sphere's color with a button press and enlarge it with a toggle, providing a basic but effective introduction to a simple configuration.
+- I highly recommend running `demo/simple.py` to test things out if you're just getting started. This demo is configured to change the sphere's color with a button press and enlarge it with a toggle, providing a basic but effective introduction to a simple configuration.
   
 #### Can I use it for a non-MuJoCo application?
 
