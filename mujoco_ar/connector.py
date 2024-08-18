@@ -4,7 +4,9 @@ import json
 import numpy as np
 import os
 import signal
+import psutil
 import socket
+import cv2
 import threading
 import mujoco
 import warnings
@@ -117,7 +119,6 @@ class MujocoARConnector:
                 output = subprocess.check_output(command, shell=True).decode()
                 lines = output.strip().splitlines()
                 if lines:
-                    # The PID is typically the last part of the line
                     pid = lines[0].strip().split()[-1]
                     os.system(f'taskkill /PID {pid} /F')
                     if self.debug:
