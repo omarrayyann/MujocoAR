@@ -4,9 +4,7 @@ import json
 import numpy as np
 import os
 import signal
-import psutil
 import socket
-import cv2
 import threading
 import mujoco
 import warnings
@@ -114,7 +112,22 @@ class MujocoARConnector:
                 if self.debug:
                     print(f"[ERROR] Failed to kill process using port {port}: {e}")
         else:
-            os.system(f'taskkill /PID {pid} /F')
+            try:
+                command = f"netstat -ano | findstr :{port}"
+                output = subprocess.check_output(command, shell=True).decode()
+                lines = output.strip().splitlines()
+                if lines:
+                    # The PID is typically the last part of the line
+                    pid = lines[0].strip().split()[-1]
+                    os.system(f'taskkill /PID {pid} /F')
+                    if self.debug:
+                        print(f"[INFO] Killed process with PID {pid} using port {port}")
+                else:
+                    if self.debug:
+                        print(f"[INFO] No process found using port {port}")
+            except subprocess.CalledProcessError as e:
+                if self.debug:
+                    print(f"[ERROR] Failed to kill process using port {port}: {e}")
             
     async def _handle_connection(self, websocket, path):
         """
