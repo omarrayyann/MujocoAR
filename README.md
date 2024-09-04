@@ -152,7 +152,6 @@ connector.reset_position() # Resets the current position as the origin (0,0,0).
 
 - Yes, check the [Flexible Setup](#flexible-setup-works-without-mujoco) out where you can retrive the pure ARKit position and rotation and use it as you wish. You wouldn't need to pass in the MuJoCo model and data in such a case.
 
-
 ## How to contribute?
 
 Report any bugs you encounter to the [issue tracker](https://github.com/omarrayyann/MujocoAR/issues). Also, feel free to suggest any features. Those could be regarding the app ([iOS swift code](https://github.com/omarrayyann/MujocoAR-iOS-App)) or the python package.
