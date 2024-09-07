@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mujoco_ar',
-    version='1.0.1',
+    version='1.1.2',
     description='An AR controller designed to seamlessly control objects in MuJoCo and for other general uses by receiving position and rotation data from a connected iOS application.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -15,8 +15,6 @@ setup(
         'asyncio',
         'websockets',
         'numpy',
-        'psutil',
-        'opencv-python',
         'mujoco',
     ],
     classifiers=[

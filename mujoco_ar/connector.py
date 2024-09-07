@@ -4,9 +4,7 @@ import json
 import numpy as np
 import os
 import signal
-import psutil
 import socket
-import cv2
 import threading
 import mujoco
 import warnings
@@ -147,7 +145,7 @@ class MujocoARConnector:
                     if 'rotation' in data and 'position' in data:
                         rotation = np.array(data['rotation'])
                         position = np.array(data['position'])
-                        self.latest_data["rotation"] = rotation
+                        self.latest_data["rotation"] = rotation.T
                         self.latest_data["position"] = np.array([position[0],position[1],position[2]]).astype(float)
                         if self.reset_position_values is not None and self.latest_data["position"].dtype == self.reset_position_values.dtype:
                             self.latest_data["position"] -= self.reset_position_values
@@ -365,7 +363,7 @@ class LinkedFrame:
         if self.position_origin is not None:
             pose[0:3,3] += self.position_origin
         # Applying rotation
-        pose[0:3,0:3] = pose[0:3,0:3].T@self.rotation_origin
+        pose[0:3,0:3] = pose[0:3,0:3]@self.rotation_origin
 
         # Applying transformation
         pose = self.pose_transform @ pose
