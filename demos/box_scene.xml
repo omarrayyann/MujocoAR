@@ -37,7 +37,7 @@
         <light pos="-4.5 0 0" dir="1 0 0" directional="true"/>
 
 
-        <geom type="box" size="0.3 0.3 0.3" rgba="0.5 0.5 0.5 0.2" pos="0 0 0.3"/>
+        <geom type="box" size="0.3 0.3 0.3" rgba="0.6 0.9 0.6 0.2" pos="0 0 0.3"/>
 
     <site name="target" type="sphere" pos="0.0 0.0 0.3" size="0.03" rgba="1 0 0 1" />
 
