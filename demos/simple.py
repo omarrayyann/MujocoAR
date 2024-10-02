@@ -28,7 +28,7 @@ def main():
         name="target",
         scale=3.0,
         position_origin=[0.0, 0.0, 0.2],
-        pose_transform=[
+        post_transform=[
                 [0,-1, 0, 0],
                 [1, 0, 0, 0],
                 [0, 0, 1, 0],
