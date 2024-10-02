@@ -46,6 +46,7 @@ class MujocoARConnector:
         self.reset_position_values = np.array([0.0, 0.0, 0.0])
         self.get_updates = True
         self.linked_frames = []
+        self.position_limits = None
 
     async def _stop_server(self):
         """
@@ -136,7 +137,7 @@ class MujocoARConnector:
             websocket: The WebSocket connection.
             path: The URL path of the WebSocket connection.
         """
-        print("[INFO] Application connected")
+        print("[INFO] Device connected successfully!")
         self.connected_clients.add(websocket)
         try:
             async for message in websocket:
@@ -149,11 +150,31 @@ class MujocoARConnector:
                         self.latest_data["position"] = np.array([position[0],position[1],position[2]]).astype(float)
                         if self.reset_position_values is not None and self.latest_data["position"].dtype == self.reset_position_values.dtype:
                             self.latest_data["position"] -= self.reset_position_values
+
+                        if self.position_limits is not None:
+                            self.latest_data["position"][0] = np.clip(
+                                self.latest_data["position"][0],
+                                self.position_limits[0][0],
+                                self.position_limits[0][1]
+                            )
+                            self.latest_data["position"][1] = np.clip(
+                                self.latest_data["position"][1],
+                                self.position_limits[1][0],
+                                self.position_limits[1][1]
+                            )   
+                            self.latest_data["position"][2] = np.clip(
+                                self.latest_data["position"][2],
+                                self.position_limits[2][0],
+                                self.position_limits[2][1]
+                            )
+
                         self.latest_data["button"] = data.get('button', False)
                         self.latest_data["toggle"] = data.get('toggle', False)
                     
-                        for linked_frames in self.linked_frames:
-                            linked_frames.update(self.mujoco_model, self.mujoco_data, self.latest_data.copy())
+                        for linked_frame in self.linked_frames:
+                            linked_frame.update(self.mujoco_model, self.mujoco_data, self.latest_data.copy())
+                            if linked_frame.vibrate_fn is not None and linked_frame.vibrate_fn():
+                                self.vibrate(duration=0.01, intensity=1.0, sharpness=0.5)
 
                         if self.debug:
                             print(f"[DATA] Rotation: {self.latest_data['rotation']}, Position: {self.latest_data['position']}, Button: {self.latest_data['button']}, Toggle: {self.latest_data['toggle']}")
@@ -185,7 +206,8 @@ class MujocoARConnector:
             try:
                 print(f"[INFO] MujocoARConnector Starting on port {self.port}...")
                 self.server = await websockets.serve(self._handle_connection, "0.0.0.0", self.port,ping_interval=self.ping_interval,ping_timeout=self.ping_timeout)
-                print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}")
+                print(f"[INFO] MujocoARConnector Started. Details: \n[INFO] IP Address: {self.ip_address}\n[INFO] Port: {self.port}\n[INFO] Waiting for a device to connect...")
+
                 break  # Exit the loop if server starts successfully
             except OSError as e:
                 print(f"[WARNING] Port {self.port} is in use. Trying next port.")
@@ -208,6 +230,46 @@ class MujocoARConnector:
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(self._start())
 
+    def add_position_limit(self, position_limits):
+        """
+        Set the position limits for the latest_data['position'].
+
+        Args:
+            position_limits (list or numpy array): An array with shape (3, 2), where each row corresponds to
+                                                   [min, max] limits for x, y, z positions.
+        """
+        self.position_limits = np.array(position_limits)
+
+
+    
+    def vibrate(self, duration=0.1, intensity=1.0,  sharpness=1.0,):
+        """
+        Vibrate the connected device for the given duration and intensity.
+
+        Args:
+            duration (float): The duration of the vibration in seconds.
+            intensity (float): The intensity of the vibration.
+        """
+        asyncio.run_coroutine_threadsafe(self._vibrate(sharpness, intensity, duration), self.loop)
+
+    async def _vibrate(self, sharpness, intensity, duration):
+        """
+        Send a vibration command to all connected clients.
+
+        Args:
+            duration (float): The duration of the vibration in seconds (default is 0.1 seconds).
+            intensity (float): The intensity of the vibration (default is 1.0, range can be defined as per your requirements).
+        """
+        if self.connected_clients:
+            message = json.dumps({"vibrate": True, "duration": duration, "intensity": intensity, "sharpness": sharpness})
+            for client in self.connected_clients:
+                await client.send(message)
+                if self.debug:
+                    print(f"[INFO] Sent vibration command to client: {message}")
+        else:
+            if self.debug:
+                print("[INFO] No connected clients to send the vibration command.")
+
 
     def get_latest_data(self):
         """
@@ -218,7 +280,7 @@ class MujocoARConnector:
         """
         return self.latest_data
     
-    def link_body(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), pose_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_body(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), post_transform=np.identity(4), pre_transform=np.identity(4), position_limits=None, toggle_fn=None, button_fn=None, vibrate_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked body to be directly controlled by the AR data as opposed to you doing it manually.
 
@@ -227,9 +289,12 @@ class MujocoARConnector:
             scale (float): Scalar number to multiply the positions from AR kit by
             position_origin (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
             rotation_origin (numpy array of shape (3,3)): Rotation to be done on the retrived pose relative to the global frame (done after scaling if scale is not 1.0)
-            pose_transform (numpy array of shape (4,4)): Transform the recieved pose by this pose upon recieving it
+            post_transform (numpy array of shape (4,4)): Post-multiple the recieved ransform this pose upon recieving it
+            pre_transform (numpy array of shape (4,4)): Pre-multiple the recieved ransform this pose upon recieving it
+            position_limits (numpy array of shape (1,3)): Limit the position of the body to the given values
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
+            vibrate_fn (function): a function to vibrate when it returns true
             disable_pos (bool): if true, does not update the position of the geom
             disable_rot (bool): if true, does not update the rotation of the geom
 
@@ -246,9 +311,12 @@ class MujocoARConnector:
             scale=scale,
             position_origin=position_origin,
             rotation_origin=rotation_origin,
-            pose_transform=pose_transform,
+            post_transform=post_transform,
+            pre_transform=pre_transform,
+            position_limits=position_limits,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
+            vibrate_fn = vibrate_fn,
             disable_pos = disable_pos,
             disable_rot = disable_rot,
         )
@@ -258,7 +326,7 @@ class MujocoARConnector:
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked body move.")
             
-    def link_site(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), pose_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_site(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), post_transform=np.identity(4), pre_transform=np.identity(4), position_limits=None, toggle_fn=None, button_fn=None, vibrate_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked site to be directly controlled by the AR data as opposed to you doing it manually.
 
@@ -267,9 +335,12 @@ class MujocoARConnector:
             scale (float): Scalar number to multiply the positions from AR kit by
             position_origin (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
             rotation_origin (numpy array of shape (3,3)): Rotation to be done on the retrived pose relative to the global frame (done after scaling if scale is not 1.0)
-            pose_transform (numpy array of shape (4,4)): Transform the recieved pose by this pose upon recieving it
+            post_transform (numpy array of shape (4,4)): Post-multiple the recieved ransform this pose upon recieving it
+            pre_transform (numpy array of shape (4,4)): Pre-multiple the recieved ransform this pose upon recieving it
+            position_limits (numpy array of shape (1,3)): Limit the position of the body to the given values
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
+            vibrate_fn (function): a function to vibrate when it returns true
             disable_pos (bool): if true, does not update the position of the geom
             disable_rot (bool): if true, does not update the rotation of the geom
 
@@ -285,9 +356,12 @@ class MujocoARConnector:
             scale=scale,
             position_origin=position_origin,
             rotation_origin=rotation_origin,
-            pose_transform=pose_transform,
+            post_transform=post_transform,
+            pre_transform=pre_transform,
+            position_limits=position_limits,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
+            vibrate_fn = vibrate_fn,
             disable_pos = disable_pos,
             disable_rot = disable_rot,
         )
@@ -297,7 +371,7 @@ class MujocoARConnector:
         if self.mujoco_model is None or self.mujoco_data is None:
             warnings.warn("Must set the MuJoCo model and data to have the linked site move.")
 
-    def link_geom(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), pose_transform=np.identity(4), toggle_fn=None, button_fn=None, disable_pos=False, disable_rot=False):
+    def link_geom(self, name, scale=1.0, position_origin=np.zeros(3), rotation_origin=np.identity(3), post_transform=np.identity(4), pre_transform=np.identity(4), position_limits=None, toggle_fn=None, button_fn=None, vibrate_fn=None, disable_pos=False, disable_rot=False):
         """
         Adds a linked geom to be directly controlled by the AR data as opposed to you doing it manually.
 
@@ -306,9 +380,12 @@ class MujocoARConnector:
             scale (float): Scalar number to multiply the positions from AR kit by
             position_origin (numpy array of shape (3)): Translation to be done on the retrived pose (done after scaling if scale is not 1.0)
             rotation_origin (numpy array of shape (3,3)): Rotation to be done on the retrived pose relative to the global frame (done after scaling if scale is not 1.0)
-            pose_transform (numpy array of shape (4,4)): Transform the recieved pose by this pose upon recieving it
+            post_transform (numpy array of shape (4,4)): Post-multiple the recieved ransform this pose upon recieving it
+            pre_transform (numpy array of shape (4,4)): Pre-multiple the recieved ransform this pose upon recieving it
+            position_limits (numpy array of shape (1,3)): Limit the position of the body to the given values
             toggle_fn (bool): a function to call when the toggle is toggled (no args)
             button_fn (function): a function to call when the button is pressed (no args)
+            vibrate_fn (function): a function to vibrate when it returns true
             disable_pos (bool): if true, does not update the position of the geom
             disable_rot (bool): if true, does not update the rotation of the geom
 
@@ -324,9 +401,12 @@ class MujocoARConnector:
             scale=scale,
             position_origin=position_origin,
             rotation_origin=rotation_origin,
-            pose_transform=pose_transform,
+            post_transform=post_transform,
+            pre_transform=pre_transform,
+            position_limits=position_limits,
             toggle_fn=toggle_fn,
             button_fn = button_fn,
+            vibrate_fn = vibrate_fn,
             disable_pos = disable_pos,
             disable_rot = disable_rot,
         )
@@ -338,15 +418,18 @@ class MujocoARConnector:
 
 class LinkedFrame:
     
-    def __init__(self, id, frame_type, scale, position_origin, rotation_origin, pose_transform, toggle_fn, button_fn, disable_pos, disable_rot):
+    def __init__(self, id, frame_type, scale, position_origin, rotation_origin, post_transform, pre_transform, position_limits, toggle_fn, button_fn, vibrate_fn, disable_pos, disable_rot):
         self.id = id
         self.frame_type = frame_type
         self.scale = scale
         self.position_origin = position_origin
         self.rotation_origin = rotation_origin
-        self.pose_transform=pose_transform
+        self.post_transform = post_transform
+        self.pre_transform = pre_transform
+        self.position_limits = position_limits
         self.button_fn = button_fn
         self.toggle_fn = toggle_fn
+        self.vibrate_fn = vibrate_fn
         self.disable_pos = disable_pos
         self.disable_rot = disable_rot
         self.last_toggle = False
@@ -366,7 +449,7 @@ class LinkedFrame:
         pose[0:3,0:3] = pose[0:3,0:3]@self.rotation_origin
 
         # Applying transformation
-        pose = self.pose_transform @ pose
+        pose = self.post_transform @ pose @ self.pre_transform
 
         # Updating Toggle Button Variable 
         if latest_data["toggle"] is not None and self.toggle_fn is not None and self.last_toggle != latest_data["toggle"]:
@@ -376,10 +459,14 @@ class LinkedFrame:
         # Calling button function if pressed
         if latest_data["button"] and self.button_fn is not None:
             self.button_fn()
-        
         # Converting the rotation matrix to quaternion
         quat = np.zeros(4)
         mujoco.mju_mat2Quat(quat, pose[0:3,0:3].flatten())
+
+        if self.position_limits is not None:
+            pose[0,3] = np.clip(pose[0,3], self.position_limits[0][0], self.position_limits[0][1])
+            pose[1,3] = np.clip(pose[1,3], self.position_limits[1][0], self.position_limits[1][1])
+            pose[2,3] = np.clip(pose[2,3], self.position_limits[2][0], self.position_limits[2][1])
 
         if self.frame_type == 0: # body
             mocap_id = mujoco_model.body(self.id).mocapid[0]
@@ -405,4 +492,3 @@ class LinkedFrame:
                 mujoco_model.geom_quat[self.id] = quat
             if not self.disable_pos:
                 mujoco_model.geom_pos[self.id] = pose[0:3,3].tolist()
-
