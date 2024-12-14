@@ -1,4 +1,4 @@
-# Simple Pose Retrieval Setup
+# Simple Phone Pose Retrieval Setup (Teleop)
 
 This guide explains how to run MuJoCoAR for retrieving pose data directly from your iOS device without requiring MuJoCo. Follow the steps below to set it up and get started.
 
