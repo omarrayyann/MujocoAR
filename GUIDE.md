@@ -77,5 +77,3 @@ print(data)
    Run a script using the provided example `demo/flexible_setup.py` to test device connectivity and data retrieval.
 
 ---
-
-Enjoy building AR-integrated solutions with MuJoCo AR!
