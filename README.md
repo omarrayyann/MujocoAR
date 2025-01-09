@@ -9,8 +9,12 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
 - You can now trigger a vibration with configurable properties. This can be used to add haptic feedback, whether on contact with objects or to notify the user of specific events. More details in [release log](https://github.com/omarrayyann/MujocoAR/releases/tag/v1.2.0).
 
 
+## Real Demo
 
-## Demos
+![1127(3)](https://github.com/user-attachments/assets/9b738682-6c7c-4aad-bf5d-de39bd114780)
+
+
+## MuJoCo Demos
 
 <table>
   <tr>
