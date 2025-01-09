@@ -2,6 +2,8 @@
 
 This guide explains how to run MuJoCoAR for retrieving pose data directly from your iOS device without requiring MuJoCo. Follow the steps below to set it up and get started in a few minutes.
 
+![1127(3)](https://github.com/user-attachments/assets/77587d66-b9c7-4f0e-b7ae-97da8e7719f4)
+
 ---
 
 ## Installation
