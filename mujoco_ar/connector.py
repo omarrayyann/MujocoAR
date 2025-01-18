@@ -129,13 +129,12 @@ class MujocoARConnector:
                 if self.debug:
                     print(f"[ERROR] Failed to kill process using port {port}: {e}")
             
-    async def _handle_connection(self, websocket, path):
+    async def _handle_connection(self, websocket):
         """
         Handle incoming connections and messages from the application.
 
         Args:
             websocket: The WebSocket connection.
-            path: The URL path of the WebSocket connection.
         """
         print("[INFO] Device connected successfully!")
         self.connected_clients.add(websocket)
