@@ -6,7 +6,7 @@ mujoco_ar is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
 
 **Recent Updates**
 
--  Android support thanks to [@Lr-2002](https://www.github.com/Lr-2002)'s contribution.
+-  Android support thanks to [@Lr-2002](https://github.com/Lr-2002/arcore-android-sdk)'s contribution.
 - Trigger vibrations on your iOS device for haptic feedback ([release log](https://github.com/omarrayyann/MujocoAR/releases/tag/v1.2.0)).
 
 **MuJoCo Demos**
