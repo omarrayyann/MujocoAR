@@ -158,7 +158,7 @@ connector.reset_position() # Resets the current position as the origin (0,0,0).
 
 Report any bugs you encounter to the [issue tracker](https://github.com/omarrayyann/MujocoAR/issues). Also, feel free to suggest any features. Those could be regarding the app ([iOS swift code](https://github.com/omarrayyann/MujocoAR-iOS-App)) or the python package.
 
-## Acknowledgement
+## Acknowledgements
 
 - Thanks to [@Lr-2002](https://www.github.com/Lr-2002) for creating an [Android app](https://github.com/Lr-2002/arcore-android-sdk/tree/main?tab=readme-ov-file) that works with the package.
 - Thanks to  [@kevinzakka](https://www.github.com/kevinzakka) for the [mink](https://github.com/kevinzakka/mink) and [mjctrl](https://github.com/kevinzakka/mjctrl) libraries, which are used in the provided demos.
