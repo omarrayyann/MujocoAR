@@ -2,19 +2,14 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/mujoco_ar)](https://pypi.org/project/mujoco_ar/) [![Downloads](https://static.pepy.tech/badge/mujoco_ar)](https://pepy.tech/project/mujoco_ar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
-MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that enables the integration of ARKit data from a connected iOS device to control MuJoCo frames in real-time. It can also be used in non-MuJoCo applications (see the flexible setup section below). This package accompanies the MuJoCo AR iOS app that can be downloaded from [here](https://apps.apple.com/ae/app/mujoco-ar/id6612039501). Check the [flexible setup](#flexible-setup-works-without-mujoco) if you wanna use it outside of MuJoCo. Finally, check the [FAQ](#faq) below.
+mujoco_ar is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) that lets you control frames using your iOS/Android device's AR data.
 
-### Recent Updates
+**Recent Updates**
 
-- You can now trigger a vibration with configurable properties. This can be used to add haptic feedback, whether on contact with objects or to notify the user of specific events. More details in [release log](https://github.com/omarrayyann/MujocoAR/releases/tag/v1.2.0).
+-  Android support thanks to [@Lr-2002](https://www.github.com/Lr-2002)'s contribution.
+- Trigger vibrations on your iOS device for haptic feedback ([release log](https://github.com/omarrayyann/MujocoAR/releases/tag/v1.2.0)).
 
-
-## Real Demo
-
-![1127(3)](https://github.com/user-attachments/assets/9b738682-6c7c-4aad-bf5d-de39bd114780)
-
-
-## MuJoCo Demos
+**MuJoCo Demos**
 
 <table>
   <tr>
@@ -57,17 +52,22 @@ MuJoCo AR is a plugin for [MuJoCo](https://github.com/google-deepmind/mujoco) th
   </tr>
 </table>
 
-Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR). For a simpler environemnt that the ones shwon in the demo section above, check the example by using ```mjpython demo/simple.py```
+
+**Real Demo**
+
+![1127(3)](https://github.com/user-attachments/assets/9b738682-6c7c-4aad-bf5d-de39bd114780)
+
+Examples of MuJoCo AR linked to the end-effectors of multiple manipulators can be found in this fork of [Mink](https://github.com/omarrayyann/mink-mujocoAR). 
 
 ## Installation
 
-1. iOS App: Download the iOS app from the App Store [here](https://apps.apple.com/ae/app/mujoco-ar/id6612039501)
-
-2. Python Package: Install the Python package using pip:
+You can install mujoco_ar package using pip:
 
 ```bash
 pip install mujoco_ar
 ```
+
+You can download the app from the [App Store](https://apps.apple.com/ae/app/mujoco-ar/id6612039501) for iOS devices or [here](https://github.com/Lr-2002/arcore-android-sdk/tree/main?tab=readme-ov-file) for Android devices.
 
 ## Usage
 
@@ -149,14 +149,6 @@ connector.reset_position() # Resets the current position as the origin (0,0,0).
 #### How can I reduce latency?
 
 - If you're experiencing latency, try connecting your PC to your device's hotspot. This should significantly reduce latency if you're far from a router since the communication happens locally via WebSockets.
-
-#### It is not tracking my trajectory accurately. What can I do?
-
-- Make sure you're not covering the camera with your fingers. If the tracking is too sensitive, you can adjust the `scale` attribute when linking the frame to make it less reactive to minor movements. In my experience, the position retrived is more accurate than the rotation.
-
-#### Where can I start?
-
-- I highly recommend running `demo/simple.py` to test things out if you're just getting started. This demo is configured to change the sphere's color with a button press and enlarge it with a toggle, providing a basic but effective introduction to a simple configuration.
   
 #### Can I use it for a non-MuJoCo application?
 
@@ -168,7 +160,8 @@ Report any bugs you encounter to the [issue tracker](https://github.com/omarrayy
 
 ## Acknowledgement
 
-Thanks to  [@kevinzakka](https://www.github.com/kevinzakka) for the [mink](https://github.com/kevinzakka/mink) and [mjctrl](https://github.com/kevinzakka/mjctrl) libraries, which are used in the provided demos.
+- Thanks to [@Lr-2002](https://www.github.com/Lr-2002) for creating an [Android app](https://github.com/Lr-2002/arcore-android-sdk/tree/main?tab=readme-ov-file) that works with the package.
+- Thanks to  [@kevinzakka](https://www.github.com/kevinzakka) for the [mink](https://github.com/kevinzakka/mink) and [mjctrl](https://github.com/kevinzakka/mjctrl) libraries, which are used in the provided demos.
 
 ## Author
 
