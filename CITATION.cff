@@ -3,7 +3,8 @@ authors:
 - family-names: "Rayyan"
   given-names: "Omar"
   orcid: "https://orcid.org/0009-0007-3717-1216
-title: "MujocoAR"
+title: "MujocoAR: Phone Teleoperation for Robots"
 version: 1.0.0
 date-released: 2024-09-03
 url: "https://github.com/omarrayyann/MujocoAR"
+license: "Apache-2.0"
