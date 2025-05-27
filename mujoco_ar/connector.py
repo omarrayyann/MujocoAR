@@ -33,6 +33,7 @@ class MujocoARConnector:
         self.latest_data = {
             "rotation": None,
             "position": None,
+            "finger_angles": None,
             "button": None,
             "toggle": None,
         }
@@ -53,21 +54,27 @@ class MujocoARConnector:
         Stop the WebSocket server and close all active connections.
         """
         if self.server is not None:
-            # Closing all connected clients
-            for websocket in self.connected_clients:
-                await websocket.close()
-            # Stopping the server
+            for websocket in list(self.connected_clients):
+                try:
+                    await websocket.close()
+                except Exception:
+                    pass
+
             self.server.close()
             await self.server.wait_closed()
             self.server = None
             print("[INFO] MujocoARConnector Stopped")
+            asyncio.get_running_loop().stop()
 
     def stop(self):
         """
-        Stop the MujocoARConnector.
+        Stop the MujocoARConnector: shut down the server, then join the thread.
         """
-        self.loop.call_soon_threadsafe(asyncio.create_task, self._stop_server())
-
+        self.loop.call_soon_threadsafe(
+            lambda: asyncio.create_task(self._stop_server())
+        )
+        if hasattr(self, "_thread"):
+            self._thread.join()
             
     def reset_position(self):
         """
@@ -99,7 +106,6 @@ class MujocoARConnector:
         """
         if platform.system() != "Windows":
             try:
-                # Use lsof to find the process using the port
                 command = f"lsof -t -i:{port}"
                 pid = subprocess.check_output(command, shell=True).strip().decode()
                 if pid:
@@ -174,9 +180,16 @@ class MujocoARConnector:
                             linked_frame.update(self.mujoco_model, self.mujoco_data, self.latest_data.copy())
                             if linked_frame.vibrate_fn is not None and linked_frame.vibrate_fn():
                                 self.vibrate(duration=0.01, intensity=1.0, sharpness=0.5)
-
-                        if self.debug:
-                            print(f"[DATA] Rotation: {self.latest_data['rotation']}, Position: {self.latest_data['position']}, Button: {self.latest_data['button']}, Toggle: {self.latest_data['toggle']}")
+                    if 'finger_angles' in data:
+                        self.latest_data["finger_angles"] = {
+                            "thumb": data['finger_angles'][0],
+                            "index": data['finger_angles'][1],
+                            "middle": data['finger_angles'][2],
+                            "ring": data['finger_angles'][3],
+                            "pinky": data['finger_angles'][4],
+                        }
+                    if self.debug:
+                        print(f"[DATA] Rotation: {self.latest_data['rotation']}, Position: {self.latest_data['position']}, Button: {self.latest_data['button']}, Toggle: {self.latest_data['toggle']}")
         except websockets.ConnectionClosed as e:
             print(f"[INFO] Application disconnected: {e}")
         finally:
@@ -223,11 +236,17 @@ class MujocoARConnector:
         Start the MujocoARConnector.
         """
         self.loop = asyncio.new_event_loop()
-        threading.Thread(target=self._run_event_loop).start()
+        self._thread = threading.Thread(target=self._run_event_loop, daemon=True)
+        self._thread.start()
 
     def _run_event_loop(self):
+        """
+        Internal: run the asyncio event loop until stopped.
+        """
         asyncio.set_event_loop(self.loop)
-        self.loop.run_until_complete(self._start())
+        self.loop.create_task(self._start())
+        self.loop.run_forever()
+        self.loop.close()
 
     def add_position_limit(self, position_limits):
         """
