@@ -168,14 +168,17 @@ Report any bugs you encounter to the [issue tracker](https://github.com/omarrayy
 If you use mujoco_ar in your research, please cite it as follows:
 
 ```bibtex
-@software{ayyan2024mujocoar,
-  author = {Rayyan, Omar},
-  license = {Apache-2.0},
-  title = {{MuJoCo AR: Phone Teleoperation for Robots}},
-  url = {https://github.com/omarrayyann/mujocoar},
-  version = {1.3.0},
-  year = {2024},
-  month = aug,
+@software{rayyan2024mujocoar,
+  author       = {Rayyan, Omar},
+  title        = {{MuJoCoAR}: Phone Teleoperation for Robots},
+  version      = {1.3.0},
+  year         = {2024},
+  month        = sep,
+  doi          = {10.5281/zenodo.17111581},
+  url          = {https://github.com/omarrayyann/mujocoar},
+  license      = {MIT},
 }
 ```
+
+
 
