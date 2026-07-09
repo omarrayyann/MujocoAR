@@ -4,10 +4,6 @@
 
 teledex lets you control robot frames using your iOS device's AR data.
 
-<p align="center">
-  <img src="media/teaser.gif" width="100%" alt="Teledex teaser">
-</p>
-
 ## Demos
 
 <table>
