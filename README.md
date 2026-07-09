@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/teledex)](https://pypi.org/project/teledex/) [![Downloads](https://static.pepy.tech/badge/mujoco_ar)](https://pepy.tech/project/mujoco_ar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
-teledex lets you control robot frames using your iOS device's AR data.
+teledex lets you control robot frames and hands using your iOS device's AR data.
 
 <p align="left">
   <img src="media/oranges_43.gif" width="24%" alt="Oranges">
