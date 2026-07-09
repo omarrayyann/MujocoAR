@@ -8,14 +8,14 @@ teledex lets you control robot frames using your iOS device's AR data.
 
 <table>
   <tr>
-    <td align="center"><img src="media/coffee.gif" width="100%" alt="Coffee"><br>Coffee</td>
-    <td align="center"><img src="media/oranges.gif" width="100%" alt="Oranges"><br>Oranges</td>
-    <td align="center"><img src="media/batteries.gif" width="100%" alt="Batteries"><br>Batteries</td>
+    <td align="center"><img src="media/coffee.gif" width="100%" alt="Coffee"></td>
+    <td align="center"><img src="media/oranges.gif" width="100%" alt="Oranges"></td>
+    <td align="center"><img src="media/batteries.gif" width="100%" alt="Batteries"></td>
   </tr>
   <tr>
-    <td align="center"><img src="media/notes.gif" width="100%" alt="Notes"><br>Notes</td>
-    <td align="center"><img src="media/wipes.gif" width="100%" alt="Wipes"><br>Wipes</td>
-    <td align="center"><img src="media/precise.gif" width="100%" alt="Precise manipulation"><br>Precise</td>
+    <td align="center"><img src="media/notes.gif" width="100%" alt="Notes"></td>
+    <td align="center"><img src="media/wipes.gif" width="100%" alt="Wipes"></td>
+    <td align="center"><img src="media/precise.gif" width="100%" alt="Precise manipulation"></td>
   </tr>
 </table>
 
