@@ -4,20 +4,14 @@
 
 teledex lets you control robot frames using your iOS device's AR data.
 
-## Demos
-
-<table>
-  <tr>
-    <td align="center"><img src="media/coffee.gif" width="100%" alt="Coffee"></td>
-    <td align="center"><img src="media/oranges.gif" width="100%" alt="Oranges"></td>
-    <td align="center"><img src="media/batteries.gif" width="100%" alt="Batteries"></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="media/notes.gif" width="100%" alt="Notes"></td>
-    <td align="center"><img src="media/wipes.gif" width="100%" alt="Wipes"></td>
-    <td align="center"><img src="media/precise.gif" width="100%" alt="Precise manipulation"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="media/coffee.gif" width="32%" alt="Coffee">
+  <img src="media/oranges.gif" width="32%" alt="Oranges">
+  <img src="media/batteries.gif" width="32%" alt="Batteries">
+  <img src="media/notes.gif" width="32%" alt="Notes">
+  <img src="media/wipes.gif" width="32%" alt="Wipes">
+  <img src="media/precise.gif" width="32%" alt="Precise manipulation">
+</p>
 
 ## Installation
 
