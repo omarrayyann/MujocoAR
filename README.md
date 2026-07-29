@@ -72,6 +72,10 @@ session.resume_updates()
 session.reset_position()
 ```
 
+## Acknowledgment
+
+The CAD is based on the models from [ACE Teleop](https://ace-teleop.github.io).
+
 ## Citation
 
 If you use Teledex in your research, please cite:
